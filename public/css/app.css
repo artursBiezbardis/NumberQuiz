@@ -1,14 +1,26 @@
-button{
+button {
     font-size: 18px;
     background-color: black;
     color: #e2e8f0;
     height: 40px;
     min-width: 100%;
     border-radius: 4px;
+    margin-top: 20px
 
 }
+
 button:hover {
     background-color: gray;
     cursor: pointer;
 }
 
+.answers_container {
+    max-width: 300px;
+    margin: auto
+}
+
+.validation {
+    position: absolute;
+    margin-top: -5px;
+    color: red
+}

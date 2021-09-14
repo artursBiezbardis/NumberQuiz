@@ -3,27 +3,8 @@ declare(strict_types=1);
 
 namespace App\Http;
 
-use Illuminate\Support\Facades\Http;
-
 trait QuestionTrait
 {
-
-    public function extractQuestionDataForDB(): array
-    {
-        do {
-            $getQuestionNumber = 'random/trivia';
-            $triviaUrl = 'http://numbersapi.com/' . $getQuestionNumber . '?json';
-            $data = json_decode(Http::get($triviaUrl)->body(), true);
-            $data['text'] = substr_replace($data['text'], '?', -1, 1);
-            $extractData['question'] = explode(' ', $data['text']);
-            $extractData['question'][0] = 'What';
-            $extractData['question'] = implode(' ', $extractData['question']);
-            $extractData['answer'] = $data['number'];
-        } while (is_float($extractData['answer']) && empty($extractData['answer']) /*&& $compareAnsweredQuestions*/);
-
-        return $extractData;
-    }
-
     public function generateAnswers(int $answer, int $answerCount): array
     {
         $possibleAnswers[0] = $answer;
@@ -39,5 +20,17 @@ trait QuestionTrait
         shuffle($possibleAnswers);
 
         return $possibleAnswers;
+    }
+
+    public function formatClientData($clientData)
+    {
+        $data = json_decode($clientData, true);
+        $data['text'] = substr_replace($data['text'], '?', -1, 1);
+        $formatData['question'] = explode(' ', $data['text']);
+        $formatData['question'][0] = 'What';
+        $formatData['question'] = implode(' ', $formatData['question']);
+        $formatData['correct_answer'] = $data['number'];
+
+        return $formatData;
     }
 }

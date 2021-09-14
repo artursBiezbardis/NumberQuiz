@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -25,15 +24,14 @@ class QuizResult extends Model
         'session_answer'
     ];
 
+    public function sessionExist(Request $request): bool
+    {
+        return self::getSessionResults($request)->exists();
+    }
 
     public function getSessionResults(Request $request)
     {
         return self::where('session_token', ($request->session()->get('_token')));
-    }
-
-    public function sessionExist(Request $request): bool
-    {
-        return self::getSessionResults($request)->exists();
     }
 
     public function sessionGames(Request $request): array
@@ -44,11 +42,6 @@ class QuizResult extends Model
             ->toArray();
     }
 
-    public function countSessionEntries(Request $request): int
-    {
-        return self::getSessionResults($request)->count();
-    }
-
     public function updateAnswer(Request $request): void
     {
         self::getSessionResults($request)
@@ -56,4 +49,15 @@ class QuizResult extends Model
             ->update(['session_answer' => $request->input('answer')]);
     }
 
+    public function countSessionEntries(Request $request): int
+    {
+        return self::getSessionResults($request)->count();
+    }
+
+    public function checkIfUniqueQuestion(Request $request, array $question): bool
+    {
+        return self::getSessionResults($request)
+            ->where('question', $question['question'])
+            ->exists();
+    }
 }

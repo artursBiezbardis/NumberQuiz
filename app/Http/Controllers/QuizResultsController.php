@@ -20,6 +20,7 @@ class QuizResultsController extends Controller
 
     public function storeAnswer(Request $request): RedirectResponse
     {
+        $request->validate(['answer' => 'required|int']);
         $this->result->updateAnswer($request);
 
         return redirect()->route('playerGameStatus');
@@ -47,6 +48,7 @@ class QuizResultsController extends Controller
                 ->with('lastCorrectAnswer', $lastCorrectAnswer)
                 ->with('questionsToAnswer', self::MAX_AMOUNT_OF_QUESTIONS);
         }
+
         return redirect()->route('createQuestion');
     }
 

@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\QuizPlayController;
 use App\Http\Controllers\QuizResultsController;
+use App\Http\Controllers\TriviaClientController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,19 +15,19 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::view('/','startQuiz');
+Route::view('/', 'startQuiz');
 
-Route::view('/playQuiz','playQuiz')
+Route::view('/playQuiz', 'playQuiz');
+Route::get('/playQuiz', [TriviaClientController::class, 'playQuiz'])
     ->name('playQuiz');
 
-Route::post('/storeAnswer', [QuizResultsController::class,'storeAnswer'])
-    ->name('storeAnswer');
-
-Route::get('/playerGameStatus', [QuizResultsController::class,'playerGameStatus'])
-    ->name('playerGameStatus');
-
-Route::get('/createQuestion',[QuizPlayController::class,'createQuestion'])
+Route::get('/getQuestion', [TriviaClientController::class, 'getRandomQuestion'])
+    ->name('getQuestion');
+Route::get('/createQuestion', [TriviaClientController::class, 'createQuestion'])
     ->name('createQuestion');
 
-Route::get('/getQuestion',[\App\Http\Controllers\TriviaClientController::class, 'getRandomQuestion'])
-    ->name('getQuestion');
+Route::post('/storeAnswer', [QuizResultsController::class, 'storeAnswer'])
+    ->name('storeAnswer');
+Route::get('/playerGameStatus', [QuizResultsController::class, 'playerGameStatus'])
+    ->name('playerGameStatus');
+
