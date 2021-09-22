@@ -3,28 +3,27 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use App\Services\TriviaClientService;
 use App\Models\QuizResult;
 use Illuminate\Support\Facades\Http;
 
 class TriviaClientRepository
 {
     const TRIVIA_URL = 'http://numbersapi.com/random/trivia?json';
-
     private QuizResult $query;
+    private GeneralQueryRepository $generalQuery;
 
-    public function __construct(QuizResult $query)
+    public function __construct(QuizResult $query, GeneralQueryRepository $generalQuery)
     {
         $this->query = $query;
+        $this->generalQuery = $generalQuery;
     }
 
-
-    public function getQuizData():string
+    public function getQuizData(): string
     {
         return Http::get(self::TRIVIA_URL)->body();
     }
 
-    public function createNewQuestion(string $token,int $questionCount,array $question ):void
+    public function createNewQuestion(string $token, int $questionCount, array $question): void
     {
         $this->query->create(
             [
@@ -36,20 +35,11 @@ class TriviaClientRepository
         );
     }
 
-    public function getSessionResults(string $token)
+    public function checkIfUniqueQuestion($token, array $question): bool
     {
-        return $this->query->where('session_token', $token);
-    }
-
-    public function checkIfUniqueQuestion( $token, array $question): bool
-    {
-        return self::getSessionResults($token)
+        return $this->generalQuery->getSessionResults($token)
             ->where('question', $question['question'])
             ->exists();
     }
 
-    public function countSessionEntries(string $token): int
-    {
-        return self::getSessionResults($token)->count();
-    }
 }

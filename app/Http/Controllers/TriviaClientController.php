@@ -16,7 +16,7 @@ class TriviaClientController extends Controller
         $this->service = $service;
     }
 
-    public function createQuestion(Request $request):RedirectResponse
+    public function createQuestion(Request $request): RedirectResponse
     {
         return $this->service->createQuestion($request);
     }
