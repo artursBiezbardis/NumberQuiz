@@ -22,7 +22,7 @@ trait QuestionTrait
         return $possibleAnswers;
     }
 
-    public function formatClientData($clientData)
+    public function formatClientData($clientData):array
     {
         $data = json_decode($clientData, true);
         $data['text'] = substr_replace($data['text'], '?', -1, 1);
