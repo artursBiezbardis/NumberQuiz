@@ -1,8 +1,7 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Repositories;
-
-use App\Models\QuizResult;
 
 class QuizResultsRepository
 {
@@ -11,7 +10,6 @@ class QuizResultsRepository
 
     public function __construct(GeneralQueryRepository $generalQueries)
     {
-
         $this->generalQueries = $generalQueries;
     }
 
@@ -42,4 +40,12 @@ class QuizResultsRepository
         $this->generalQueries->getSessionResults($token)->delete();
     }
 
+    public function checkIfLastAnswerIsAnswered(string $token): bool
+    {
+        $getVal = $this->generalQueries->getSessionResults($token)
+            ->where('question_count', $this->generalQueries->countSessionEntries($token));
+        $sessionAnswer = $getVal->get('session_answer')->toArray()[0]['session_answer'];
+
+        return $sessionAnswer !== null;
+    }
 }

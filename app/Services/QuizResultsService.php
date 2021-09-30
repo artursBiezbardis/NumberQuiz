@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Services;
 
 use App\Repositories\GeneralQueryRepository;
 use App\Repositories\QuizResultsRepository;
 use Illuminate\Http\RedirectResponse;
+use App\Http\Requests\QuizResultRequest;
 use Illuminate\Http\Request;
 
 class QuizResultsService
@@ -19,11 +21,10 @@ class QuizResultsService
         $this->generalRepository = $generalRepository;
     }
 
-    public function storeAnswer(Request $request): RedirectResponse
+    public function storeAnswer(QuizResultRequest $request): RedirectResponse
     {
         $token = $request->session()->token();
-        $answer = $request->input('answer');
-        $request->validate(['answer' => 'required|int']);
+        $answer = (int)$request->input('answer');
         $this->repository->updateAnswer($token, $answer);
 
         return redirect()->route('playerGameStatus');
@@ -32,16 +33,18 @@ class QuizResultsService
     public function playerGameStatus(Request $request)
     {
         $token = $request->session()->token();
+        $sessionExist = $this->generalRepository->sessionExistInDB($token);
         $questionCount = $this->generalRepository->countSessionEntries($token) ?? 0;
+        $lastAnswerIsAnswered = $questionCount == 0 ? false : $this->repository->checkIfLastAnswerIsAnswered($token);
         $answerResult = self::compareAnswer($request);
 
-        if ($questionCount >= self::MAX_AMOUNT_OF_QUESTIONS && $answerResult) {
+        if ($sessionExist && $lastAnswerIsAnswered && $questionCount >= self::MAX_AMOUNT_OF_QUESTIONS && $answerResult) {
             $this->repository->deleteSessionResults($token);
 
             return view('getResult')
                 ->with('result', true);
         }
-        if (!$answerResult && $questionCount != 0) {
+        if ($sessionExist && !$answerResult && $questionCount !== 0) {
             $lastCorrectAnswer = $this->repository->getLastCorrectAnswer($token);
             $this->repository->deleteSessionResults($token);
 
@@ -50,8 +53,12 @@ class QuizResultsService
                 ->with('lastCorrectAnswer', $lastCorrectAnswer)
                 ->with('questionsToAnswer', self::MAX_AMOUNT_OF_QUESTIONS);
         }
+        if ($sessionExist && !$lastAnswerIsAnswered) {
 
-        return redirect()->route('createQuestion');
+            return redirect()->back();
+        }
+
+        return redirect()->route('retrieveQuizData');
     }
 
     public function compareAnswer(Request $request): bool

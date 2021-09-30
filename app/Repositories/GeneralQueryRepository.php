@@ -25,4 +25,9 @@ class GeneralQueryRepository
     {
         return $this->query->where('session_token', $token);
     }
+
+    public function sessionExistInDB(string $token): bool
+    {
+        return self::getSessionResults($token)->exists();
+    }
 }

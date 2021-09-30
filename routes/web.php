@@ -15,7 +15,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::view('/', 'startQuiz');
+
+Route::get('/', [QuizResultsController::class, 'playerGameStatus'])
+    ->name('playerGameStatus');
 
 Route::view('/playQuiz', 'playQuiz');
 Route::get('/playQuiz', [TriviaClientController::class, 'playQuiz'])
@@ -25,9 +27,8 @@ Route::get('/getQuestion', [TriviaClientController::class, 'getRandomQuestion'])
     ->name('getQuestion');
 Route::get('/createQuestion', [TriviaClientController::class, 'createQuestion'])
     ->name('createQuestion');
+Route::get('/retrieveQuizData', [TriviaClientController::class, 'retrieveQuizData'])
+    ->name('retrieveQuizData');
 
 Route::post('/storeAnswer', [QuizResultsController::class, 'storeAnswer'])
     ->name('storeAnswer');
-Route::get('/playerGameStatus', [QuizResultsController::class, 'playerGameStatus'])
-    ->name('playerGameStatus');
-

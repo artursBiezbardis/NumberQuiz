@@ -7,7 +7,7 @@
             @foreach($answers as $key=>$answer)
                 <div>
                     <input type="radio" name="answer"
-                           id="{{$answer}}" value="{{$answer}}" {{ old('answer')== $answer ? 'checked' : ''}} >
+                           id="{{$answer}}" value="{{$answer}}">
                     <label class="" for="{{$answer}}">
                         {{$answer}}
                     </label>

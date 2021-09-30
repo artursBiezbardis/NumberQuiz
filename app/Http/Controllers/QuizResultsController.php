@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Services\QuizResultsService;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use App\Http\Requests\QuizResultRequest;
 
 class QuizResultsController extends Controller
 {
@@ -17,7 +18,7 @@ class QuizResultsController extends Controller
         $this->service = $service;
     }
 
-    public function storeAnswer(Request $request): RedirectResponse
+    public function storeAnswer(QuizResultRequest $request): RedirectResponse
     {
         return $this->service->storeAnswer($request);
     }

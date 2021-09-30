@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TriviaClientRequest;
 use App\Services\TriviaClientService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,7 +17,12 @@ class TriviaClientController extends Controller
         $this->service = $service;
     }
 
-    public function createQuestion(Request $request): RedirectResponse
+    public function retrieveQuizData(Request $request): RedirectResponse
+    {
+        return $this->service->retrieveQuizData($request);
+    }
+
+    public function createQuestion(TriviaClientRequest $request): RedirectResponse
     {
         return $this->service->createQuestion($request);
     }

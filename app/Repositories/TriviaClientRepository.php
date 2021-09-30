@@ -23,14 +23,14 @@ class TriviaClientRepository
         return Http::get(self::TRIVIA_URL)->body();
     }
 
-    public function createNewQuestion(string $token, int $questionCount, array $question): void
+    public function createNewQuestion(string $token, int $questionCount, string $question, int $correctAnswer): void
     {
         $this->query->create(
             [
                 'session_token' => $token,
                 'question_count' => $questionCount,
-                'question' => $question['question'],
-                'correct_answer' => $question['correct_answer']
+                'question' => $question,
+                'correct_answer' => $correctAnswer
             ]
         );
     }
