@@ -25,8 +25,10 @@ Route::get('/playQuiz', [TriviaClientController::class, 'playQuiz'])
 
 Route::get('/getQuestion', [TriviaClientController::class, 'getRandomQuestion'])
     ->name('getQuestion');
+
 Route::get('/createQuestion', [TriviaClientController::class, 'createQuestion'])
     ->name('createQuestion');
+
 Route::get('/retrieveQuizData', [TriviaClientController::class, 'retrieveQuizData'])
     ->name('retrieveQuizData');
 

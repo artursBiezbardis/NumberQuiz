@@ -6,13 +6,12 @@ namespace App\Repositories;
 use App\Models\QuizResult;
 use Illuminate\Database\Eloquent\Builder;
 
-class GeneralQueryRepository
+class MySQLGeneralQueryRepository implements GeneralQueryRepositoryInterface
 {
     private QuizResult $query;
 
     public function __construct(QuizResult $query)
     {
-
         $this->query = $query;
     }
 

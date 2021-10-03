@@ -13,7 +13,21 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind(
+            'App\Repositories\GeneralQueryRepositoryInterface',
+            'App\Repositories\MySQLGeneralQueryRepository'
+        );
+
+        $this->app->bind(
+            'App\Repositories\QuizResultsRepositoryInterface',
+            'App\Repositories\MySQLQuizResultsRepository'
+        );
+
+        $this->app->bind(
+            'App\Repositories\TriviaClientRepositoryInterface',
+            'App\Repositories\MySQLTriviaClientRepository'
+        );
+
     }
 
     /**

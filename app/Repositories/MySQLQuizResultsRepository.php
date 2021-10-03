@@ -3,17 +3,17 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-class QuizResultsRepository
+class MySQLQuizResultsRepository implements QuizResultsRepositoryInterface
 {
 
-    private GeneralQueryRepository $generalQueries;
+    private GeneralQueryRepositoryInterface $generalQueries;
 
-    public function __construct(GeneralQueryRepository $generalQueries)
+    public function __construct(GeneralQueryRepositoryInterface $generalQueries)
     {
         $this->generalQueries = $generalQueries;
     }
 
-    public function updateAnswer(string $token, int $answer): void
+    public function storeAnswer(string $token, int $answer): void
     {
         $this->generalQueries->getSessionResults($token)
             ->where('question_count', $this->generalQueries->countSessionEntries($token))

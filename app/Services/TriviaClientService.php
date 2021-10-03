@@ -3,37 +3,41 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Http\Requests\TriviaClientRequest;
-use App\Repositories\GeneralQueryRepository;
+use App\Repositories\GeneralQueryRepositoryInterface;
+use App\Repositories\TriviaClientRepositoryInterface;
 use App\Repositories\TriviaClientRepository;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 
 class TriviaClientService
 {
     const POSSIBLE_ANSWER_COUNT = 3;
 
-    private TriviaClientRepository $repository;
-    private GeneralQueryRepository $generalRepository;
+    private TriviaClientRepository $clientRepository;
+    private GeneralQueryRepositoryInterface $generalRepository;
+    private TriviaClientRepositoryInterface $repository;
 
-    public function __construct(TriviaClientRepository $repository, GeneralQueryRepository $generalRepository)
+    public function __construct(
+        TriviaClientRepository $clientRepository,
+        TriviaClientRepositoryInterface $repository,
+        GeneralQueryRepositoryInterface $generalRepository
+    )
     {
         $this->repository = $repository;
+        $this->clientRepository = $clientRepository;
         $this->generalRepository = $generalRepository;
     }
 
-    public function createQuestion(TriviaClientRequest $request): RedirectResponse
+    public function createQuestion(string $token, string $question, int $correctAnswer): array
     {
-        $token = $request->session()->token();
-        $question = $request->input('question');
-        $correctAnswer = (int)$request->input('correctAnswer');
         $questionCount = $this->generalRepository->countSessionEntries($token) + 1 ?? 1;
-        $this->repository->createNewQuestion($token, $questionCount, $question, $correctAnswer);
+        $this->repository->createNewQuestion(
+            $token,
+            $questionCount,
+            $question,
+            $correctAnswer
+        );
         $answers = self::generateAnswers($correctAnswer, self::POSSIBLE_ANSWER_COUNT);
-        $question = ['answers' => $answers, 'question' => $question, 'questionNumber' => $questionCount];
-        $request->session()->put('question', $question);
 
-        return redirect()->route('playQuiz');
+        return ['answers' => $answers, 'question' => $question, 'questionNumber' => $questionCount];
     }
 
     public function generateAnswers(int $answer, int $answerCount): array
@@ -53,18 +57,16 @@ class TriviaClientService
         return $possibleAnswers;
     }
 
-    public function retrieveQuizData(Request $request): RedirectResponse
+    public function retrieveQuizData(): array
     {
-        $quizData = $this->repository->getQuizData();
+        $quizData = $this->clientRepository->getQuizData();
         $data = json_decode($quizData, true);
         $data['text'] = substr_replace($data['text'], '?', -1, 1);
         $formatData['question'] = explode(' ', $data['text']);
         $formatData['question'][0] = 'What';
         $formatData['question'] = implode(' ', $formatData['question']);
         $formatData['correct_answer'] = $data['number'];
-        $request->merge($formatData);
-        $request->flash();
 
-        return redirect()->route('createQuestion');
+        return $formatData;
     }
 }

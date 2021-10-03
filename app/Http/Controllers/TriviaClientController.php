@@ -19,12 +19,21 @@ class TriviaClientController extends Controller
 
     public function retrieveQuizData(Request $request): RedirectResponse
     {
-        return $this->service->retrieveQuizData($request);
+        $formatData = $this->service->retrieveQuizData();
+        $request->merge($formatData);
+        $request->flash();
+
+        return redirect()->route('createQuestion');
     }
 
     public function createQuestion(TriviaClientRequest $request): RedirectResponse
     {
-        return $this->service->createQuestion($request);
+        $question = $request->input('question');
+        $correctAnswer = (int)$request->input('correctAnswer');
+        $question = $this->service->createQuestion($request->session()->token(), $question, $correctAnswer);
+        $request->session()->put('question', $question);
+
+        return redirect()->route('playQuiz');
     }
 
     public function playQuiz(Request $request)
